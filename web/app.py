@@ -26,7 +26,7 @@ def api_down_vote():
     pass
 
 
-@app.route('posts', methods=['GET'])
+@app.route('/posts', methods=['GET'])
 def api_top_list():
     pass
 
