@@ -6,6 +6,6 @@
 * Git tags
 * Docker file - skeleton done
 * DAL - skeleton done
-* DB structure
+* ~~DB structure~~
 * Unit tests
 * Integration tests
