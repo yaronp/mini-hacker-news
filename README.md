@@ -2,10 +2,10 @@
 
 # Tasks
 
-* Flask routes
+* ~~Flask routes - done~~
 * Git tags
-* Docker file
-* DAL
+* Docker file - skeleton done
+* DAL - skeleton done
 * DB structure
 * Unit tests
 * Integration tests
