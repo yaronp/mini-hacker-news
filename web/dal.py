@@ -92,9 +92,22 @@ class Dal(object):
         except sqlite3.OperationalError:
             return False
 
-    def top_list(self, num_of_posts=10):
+    def top_list(self, num_of_posts=15):
         # select * from posts order by upvote desc, date limit 15
-        pass
+        self.open_db()
+        c = self.connection.cursor()
+        sql = "select * from posts order by upvote desc, date limit {0}".format(num_of_posts)
+        c.execute(sql)
+        res = c.fetchall()
+        c.close()
+        fields = ["id", "date", "post", "upvote", "downvote"]
+
+        result = []
+        for rec in res:
+            result.append(
+                {fields[0]: rec[0], fields[1]: rec[1], fields[2]: rec[2], fields[3]: rec[3], fields[4]: rec[4]})
+
+        return result
 
     def is_post_exist(self, post_id):
         self.open_db()
@@ -103,16 +116,6 @@ class Dal(object):
         sql = "SELECT id FROM posts WHERE id = {0}".format(post_id)
         c.execute(sql)
         res = bool(c.fetchone() is not None)
-        c.close()
-        return res
-
-    def get_field_by_id(self, post_id, field_name):
-        self.open_db()
-        c = self.connection.cursor()
-
-        sql = "SELECT {0} FROM posts WHERE id = {1}".format(field_name, post_id)
-        c.execute(sql)
-        res = c.fetchone()
         c.close()
         return res
 

@@ -50,7 +50,9 @@ def register_routes(app):
 
     @app.route('/posts', methods=['GET'])
     def api_top_list():
-        pass
+        dal = Dal()
+        data_set = dal.top_list()
+        return json.dumps(data_set), 200, {'ContentType': 'application/json'}
 
 
 if __name__ == '__main__':

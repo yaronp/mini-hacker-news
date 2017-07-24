@@ -16,3 +16,14 @@
 * /upvote
 * /downvote
 * /posts
+
+# Running
+
+## Pre-requisites
+
+    pip install flask
+
+## Run
+
+    cd web
+    python app.py 
