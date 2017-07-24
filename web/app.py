@@ -37,14 +37,16 @@ def register_routes(app):
     @app.route('/upvote', methods=['POST'])
     def api_up_vote():
         id = request.args.get('id', '')
-        print id
-        pass
+        dal = Dal()
+        dal.up_vote(id)
+        return http_error('success', 200)
 
     @app.route('/downvote', methods=['POST'])
     def api_down_vote():
         id = request.args.get('id', '')
-        print id
-        pass
+        dal = Dal()
+        dal.down_vote(id)
+        return http_error('success', 200)
 
     @app.route('/posts', methods=['GET'])
     def api_top_list():

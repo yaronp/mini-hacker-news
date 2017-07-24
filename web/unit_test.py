@@ -34,6 +34,15 @@ class PostsTest(unittest.TestCase):
         response = self.app.post('/post?id=100', data=json.dumps(post_text), content_type='application/json')
         self.assertEqual(response.status_code, 500)
 
+    def test_Upvote(self):
+        response = self.app.post('/upvote?id=1')
+        self.assertEqual(response.status_code, 200)
+
+    def test_Dnvote(self):
+        response = self.app.post('/downvote?id=1')
+        self.assertEqual(response.status_code, 200)
+
+
     def tearDown(self):
         pass
 

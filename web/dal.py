@@ -41,7 +41,7 @@ class Dal(object):
         c = self.connection.cursor()
         ts = '{:%Y-%m-%d %H:%M}'.format(datetime.datetime.now())
         sql = "UPDATE posts set date='{0}', post='{1}' WHERE id = {2}".format(ts, update_text, post_id)
- 
+
         try:
             result = c.execute(sql)
             if result is not None:
@@ -52,14 +52,45 @@ class Dal(object):
         except sqlite3.OperationalError:
             return False
 
-
         return True
 
     def up_vote(self, post_id):
-        pass
+        if not self.is_post_exist(post_id):
+            return False
+
+        self.open_db()
+        c = self.connection.cursor()
+        ts = '{:%Y-%m-%d %H:%M}'.format(datetime.datetime.now())
+        sql = "UPDATE posts SET upvote=upvote+1 WHERE id={0}".format(post_id)
+
+        try:
+            result = c.execute(sql)
+            if result is not None:
+                self.connection.commit()
+            print result
+            c.close()
+            return True
+        except sqlite3.OperationalError:
+            return False
 
     def down_vote(self, post_id):
-        pass
+        if not self.is_post_exist(post_id):
+            return False
+
+        self.open_db()
+        c = self.connection.cursor()
+        ts = '{:%Y-%m-%d %H:%M}'.format(datetime.datetime.now())
+        sql = "UPDATE posts SET downvote=downvote+1 WHERE id={0}".format(post_id)
+
+        try:
+            result = c.execute(sql)
+            if result is not None:
+                self.connection.commit()
+            print result
+            c.close()
+            return True
+        except sqlite3.OperationalError:
+            return False
 
     def top_list(self, num_of_posts=10):
         # select * from posts order by upvote desc, date limit 15
@@ -73,7 +104,16 @@ class Dal(object):
         c.execute(sql)
         res = bool(c.fetchone() is not None)
         c.close()
+        return res
 
+    def get_field_by_id(self, post_id, field_name):
+        self.open_db()
+        c = self.connection.cursor()
+
+        sql = "SELECT {0} FROM posts WHERE id = {1}".format(field_name, post_id)
+        c.execute(sql)
+        res = c.fetchone()
+        c.close()
         return res
 
     def open_db(self):
