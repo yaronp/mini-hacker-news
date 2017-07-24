@@ -34,7 +34,26 @@ class Dal(object):
             return False
 
     def update(self, post_id, update_text):
-        pass
+        if not self.is_post_exist(post_id):
+            return False
+
+        self.open_db()
+        c = self.connection.cursor()
+        ts = '{:%Y-%m-%d %H:%M}'.format(datetime.datetime.now())
+        sql = "UPDATE posts set date='{0}', post='{1}' WHERE id = {2}".format(ts, update_text, post_id)
+
+        try:
+            result = c.execute(sql)
+            if result is not None:
+                self.connection.commit()
+            print result
+            c.close()
+            return True
+        except sqlite3.OperationalError:
+            return False
+
+
+        return True
 
     def up_vote(self, post_id):
         pass
@@ -45,6 +64,17 @@ class Dal(object):
     def top_list(self, num_of_posts=10):
         # select * from posts order by upvote desc, date limit 15
         pass
+
+    def is_post_exist(self, post_id):
+        self.open_db()
+        c = self.connection.cursor()
+
+        sql = "SELECT id FROM posts WHERE id = {0}".format(post_id)
+        c.execute(sql)
+        res = bool(c.fetchone() is not None)
+        c.close()
+
+        return res
 
     def open_db(self):
         if self.connection is not None:

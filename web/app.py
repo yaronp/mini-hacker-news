@@ -14,17 +14,23 @@ def http_error(msg, code):
 
 
 def register_routes(app):
-    @app.route('/posts', methods=['POST'])
+    @app.route('/post', methods=['POST'])
     def api_posts():
+        post_id = request.args.get('id')
         content = request.get_json(silent=True)
         if request.data is None or type(content) is not dict:
             return http_error('empty or wrong type body', 400)
-        if content.get('post') is None:
+        post_text = content.get('post')
+        if post_text is None:
             return http_error('post field not found', 400)
 
         dal = Dal()
-        if not dal.create(content.get('post')):
-            return http_error('error while inserting record to storage', 500)
+        if post_id is None:
+            if not dal.create(post_text):
+                return http_error('error while inserting record to storage', 500)
+        else:
+            if not dal.update(post_id, post_text):
+                return http_error('error while inserting record to storage', 500)
 
         return http_error('success', 200)
 
