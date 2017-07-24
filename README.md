@@ -5,16 +5,16 @@
 * ~~Flask routes - done~~
 * ~~Git tags~~
 * Docker file - skeleton done
-* DAL - skeleton done
+* ~~DAL - done~~
 * ~~DB structure~~
-* Unit tests - partially done
+* ~~Unit tests - done~~
 
 # Routes
 
 * /post
 * /post?id
-* /upvote
-* /downvote
+* /upvote?id
+* /downvote?id
 * /posts
 
 # Running
@@ -27,3 +27,11 @@
 
     cd web
     python app.py 
+    
+## Docker Image Build
+
+   docker build -t posts:latest
+   
+## Run the Docker Container
+
+  docker run -d -p 5000:5000 posts   
