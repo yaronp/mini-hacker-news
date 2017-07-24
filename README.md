@@ -1,14 +1,3 @@
-# Requirements
-
-# Tasks
-
-* ~~Flask routes - done~~
-* ~~Git tags~~
-* Docker file - skeleton done
-* ~~DAL - done~~
-* ~~DB structure~~
-* ~~Unit tests - done~~
-
 # Routes
 
 * /post
@@ -30,8 +19,18 @@
     
 ## Docker Image Build
 
-   docker build -t posts:latest
+    docker build -t posts:latest
    
 ## Run the Docker Container
 
-  docker run -d -p 5000:5000 posts   
+    docker run -d -p 5000:5000 posts   
+  
+# Tasks
+
+* ~~Flask routes - done~~
+* ~~Git tags~~
+* Docker file - skeleton done
+* ~~DAL - done~~
+* ~~DB structure~~
+* ~~Unit tests - done~~
+  
