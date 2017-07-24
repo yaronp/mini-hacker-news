@@ -41,7 +41,7 @@ class Dal(object):
         c = self.connection.cursor()
         ts = '{:%Y-%m-%d %H:%M}'.format(datetime.datetime.now())
         sql = "UPDATE posts set date='{0}', post='{1}' WHERE id = {2}".format(ts, update_text, post_id)
-
+ 
         try:
             result = c.execute(sql)
             if result is not None:
