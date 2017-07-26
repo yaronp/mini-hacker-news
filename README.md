@@ -23,7 +23,7 @@
    
 ## Run the Docker Container
 
-    docker run -d -p 5000:5000 posts   
+    docker run -d -p 5000:5000 --name posts posts   
   
 # Tasks
 
