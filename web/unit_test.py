@@ -42,7 +42,6 @@ class PostsTest(unittest.TestCase):
         response = self.app.post('/downvote?id=1')
         self.assertEqual(response.status_code, 200)
 
-
     def tearDown(self):
         pass
 
