@@ -19,7 +19,7 @@
     
 ## Docker Image Build
 
-    docker build -t posts:latest
+    docker build ./ -t posts:latest
    
 ## Run the Docker Container
 
@@ -29,7 +29,7 @@
 
 * ~~Flask routes - done~~
 * ~~Git tags~~
-* Docker file - skeleton done
+* ~~Docker file - done~~
 * ~~DAL - done~~
 * ~~DB structure~~
 * ~~Unit tests - done~~
