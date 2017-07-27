@@ -24,7 +24,10 @@
 ## Run the Docker Container
 
     docker run -d -p 5000:5000 --name posts posts   
-  
+ 
+or 
+
+    docker-compose up -d
 # Tasks
 
 * ~~Flask routes - done~~
@@ -33,4 +36,9 @@
 * ~~DAL - done~~
 * ~~DB structure~~
 * ~~Unit tests - done~~
+* Docker compose
+* Wilson score support for ranking
+* Redis support
+* User login
+* Single voting
   
