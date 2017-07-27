@@ -7,5 +7,5 @@ services:
     volumes:
      - .:/code
   redis:
-    image: "redis:alpine"
+    image: "redis:latest"
 
