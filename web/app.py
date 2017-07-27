@@ -54,8 +54,12 @@ def register_routes(app):
         data_set = dal.top_list()
         return json.dumps(data_set), 200, {'ContentType': 'application/json'}
 
+    @app.route('/h', methods=['GET'])
+    def api_hello():
+        return "Hello, World!"
+
 
 if __name__ == '__main__':
     app = create_app()
     register_routes(app)
-    app.run(debug=True)
+    app.run(debug=True,host='0.0.0.0')
