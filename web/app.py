@@ -14,15 +14,15 @@ def http_error(msg, code):
 
 
 def register_routes(app):
-    @app.route('v0//post', methods=['POST'])
+    @app.route('/v0/post', methods=['POST'])
     def api_posts():
         post_id = request.args.get('id')
         content = request.get_json(silent=True)
         if request.data is None or type(content) is not dict:
-            return http_error('empty or wrong type body', 400)
+            return http_error('empty or wrong type body (json body type?)', 400)
         post_text = content.get('post')
         if post_text is None:
-            return http_error('post field not found', 400)
+            return http_error('post field not found in body', 400)
 
         dal = Dal()
         if post_id is None:
@@ -34,14 +34,14 @@ def register_routes(app):
 
         return http_error('success', 200)
 
-    @app.route('/v0//upvote', methods=['POST'])
+    @app.route('/v0/upvote', methods=['POST'])
     def api_up_vote():
         id = request.args.get('id', '')
         dal = Dal()
         dal.up_vote(id)
         return http_error('success', 200)
 
-    @app.route('/v0//downvote', methods=['POST'])
+    @app.route('/v0/downvote', methods=['POST'])
     def api_down_vote():
         id = request.args.get('id', '')
         dal = Dal()

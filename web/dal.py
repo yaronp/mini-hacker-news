@@ -14,6 +14,14 @@ def take(n, iterable):
     return list(islice(iterable, n))
 
 
+def in_docker():
+    """ Returns: True if running in a docker container, else False """
+    if not os.path.isfile('/proc/1/cgroup'):
+        return False
+    with open('/proc/1/cgroup', 'rt') as ifh:
+        return 'docker' in ifh.read()
+
+
 class Singleton(type):
     _instances = {}
 
@@ -27,8 +35,12 @@ class Dal(object):
     __metaclass__ = Singleton
 
     def __init__(self):
-        self.client = MongoClient(os.environ['DB_PORT_27017_TCP_ADDR'], 27017)
-        # self.client = MongoClient()
+        # self.client = MongoClient(os.environ['DB_PORT_27017_TCP_ADDR'], 27017)
+        if in_docker():
+            self.client = MongoClient("db")
+        else:
+            self.client = MongoClient()
+
         self.db = self.client.postdb
 
     def create(self, post_text):
@@ -50,7 +62,7 @@ class Dal(object):
     def down_vote(self, post_id):
         self.db.postdb.update_one({'_id': post_id}, {'$inc': {'down_vote': 1}}, upsert=False)
 
-    def top_list(self, num_of_posts=500):
+    def top_list(self, num_of_posts=50):
         now = datetime.utcnow()
         # limit number of records? .limit(num)
         collection = self.db.postdb.find(sort=[('date', ASCENDING)])
@@ -60,5 +72,7 @@ class Dal(object):
             td = now - past
             rank = front_page_rank(item['up_vote'], item['down_vote'], (td.seconds // 60) % 60)
             tops[str(item['_id'])] = rank
+        if len(tops) is 0:
+            return
         res = take(num_of_posts, sorted(tops, key=tops.__getitem__, reverse=True))
-        print res
+        return res
