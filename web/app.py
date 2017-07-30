@@ -14,7 +14,7 @@ def http_error(msg, code):
 
 
 def register_routes(app):
-    @app.route('/post', methods=['POST'])
+    @app.route('v0//post', methods=['POST'])
     def api_posts():
         post_id = request.args.get('id')
         content = request.get_json(silent=True)
@@ -34,27 +34,27 @@ def register_routes(app):
 
         return http_error('success', 200)
 
-    @app.route('/upvote', methods=['POST'])
+    @app.route('/v0//upvote', methods=['POST'])
     def api_up_vote():
         id = request.args.get('id', '')
         dal = Dal()
         dal.up_vote(id)
         return http_error('success', 200)
 
-    @app.route('/downvote', methods=['POST'])
+    @app.route('/v0//downvote', methods=['POST'])
     def api_down_vote():
         id = request.args.get('id', '')
         dal = Dal()
         dal.down_vote(id)
         return http_error('success', 200)
 
-    @app.route('/posts', methods=['GET'])
+    @app.route('/v0/topstories', methods=['GET'])
     def api_top_list():
         dal = Dal()
         data_set = dal.top_list()
         return json.dumps(data_set), 200, {'ContentType': 'application/json'}
 
-    @app.route('/h', methods=['GET'])
+    @app.route('/v0//h', methods=['GET'])
     def api_hello():
         return "Hello, World!"
 

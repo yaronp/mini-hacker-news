@@ -1,5 +1,15 @@
-import datetime
-import sqlite3
+from collections import Counter
+from datetime import datetime
+from itertools import islice
+
+from pymongo import ASCENDING
+from pymongo import MongoClient
+
+from wilson import front_page_rank
+
+def take(n, iterable):
+    """Return first n items of the iterable as a list"""
+    return list(islice(iterable, n))
 
 
 class Singleton(type):
@@ -15,121 +25,38 @@ class Dal(object):
     __metaclass__ = Singleton
 
     def __init__(self):
-        self.connection = None
+        # self.client = MongoClient(os.environ['DB_PORT_27017_TCP_ADDR'], 27017)
+        self.client = MongoClient()
+        self.db = self.client.postdb
 
     def create(self, post_text):
-        self.open_db()
-        c = self.connection.cursor()
-        ts = '{:%Y-%m-%d %H:%M}'.format(datetime.datetime.now())
-        sql = "INSERT INTO posts (date, post, upvote, downvote) VALUES ('{0}', '{1}',0,0)".format(ts, post_text)
-
-        try:
-            result = c.execute(sql)
-            if result is not None:
-                self.connection.commit()
-            print result
-            c.close()
-            return True
-        except sqlite3.OperationalError:
-            return False
+        # reverse: datetime.strptime(date_str, "%Y-%m-%d_%H:%M:%S")
+        item_doc = {
+            "date": datetime.utcnow().strftime("%Y-%m-%d_%H:%M:%S"),
+            "post": post_text,
+            "up_vote": 0,
+            "down_vote": 0
+        }
+        return self.db.postdb.insert_one(item_doc).inserted_id
 
     def update(self, post_id, update_text):
-        if not self.is_post_exist(post_id):
-            return False
-
-        self.open_db()
-        c = self.connection.cursor()
-        ts = '{:%Y-%m-%d %H:%M}'.format(datetime.datetime.now())
-        sql = "UPDATE posts set date='{0}', post='{1}' WHERE id = {2}".format(ts, update_text, post_id)
-
-        try:
-            result = c.execute(sql)
-            if result is not None:
-                self.connection.commit()
-            print result
-            c.close()
-            return True
-        except sqlite3.OperationalError:
-            return False
-
-        return True
+        self.db.postdb.update_one({'_id': post_id}, {'$set': {'post': update_text}}, upsert=False)
 
     def up_vote(self, post_id):
-        if not self.is_post_exist(post_id):
-            return False
-
-        self.open_db()
-        c = self.connection.cursor()
-        ts = '{:%Y-%m-%d %H:%M}'.format(datetime.datetime.now())
-        sql = "UPDATE posts SET upvote=upvote+1 WHERE id={0}".format(post_id)
-
-        try:
-            result = c.execute(sql)
-            if result is not None:
-                self.connection.commit()
-            print result
-            c.close()
-            return True
-        except sqlite3.OperationalError:
-            return False
+        self.db.postdb.update_one({'_id': post_id}, {'$inc': {'up_vote': 1}}, upsert=False)
 
     def down_vote(self, post_id):
-        if not self.is_post_exist(post_id):
-            return False
+        self.db.postdb.update_one({'_id': post_id}, {'$inc': {'down_vote': 1}}, upsert=False)
 
-        self.open_db()
-        c = self.connection.cursor()
-        ts = '{:%Y-%m-%d %H:%M}'.format(datetime.datetime.now())
-        sql = "UPDATE posts SET downvote=downvote+1 WHERE id={0}".format(post_id)
-
-        try:
-            result = c.execute(sql)
-            if result is not None:
-                self.connection.commit()
-            print result
-            c.close()
-            return True
-        except sqlite3.OperationalError:
-            return False
-
-    def top_list(self, num_of_posts=15):
-        # select * from posts order by upvote desc, date limit 15
-        self.open_db()
-        c = self.connection.cursor()
-        sql = "select * from posts order by upvote desc, date limit {0}".format(num_of_posts)
-        c.execute(sql)
-        res = c.fetchall()
-        c.close()
-        fields = ["id", "date", "post", "upvote", "downvote"]
-
-        result = []
-        for rec in res:
-            result.append(
-                {fields[0]: rec[0], fields[1]: rec[1], fields[2]: rec[2], fields[3]: rec[3], fields[4]: rec[4]})
-
-        return result
-
-    def is_post_exist(self, post_id):
-        self.open_db()
-        c = self.connection.cursor()
-
-        sql = "SELECT id FROM posts WHERE id = {0}".format(post_id)
-        c.execute(sql)
-        res = bool(c.fetchone() is not None)
-        c.close()
-        return res
-
-    def open_db(self):
-        if self.connection is not None:
-            return
-        self.connection = sqlite3.connect('posts.db')
-        self.create_posts_tbl()
-
-    def create_posts_tbl(self):
-        c = self.connection.cursor()
-        c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='posts';")
-        if c.fetchone() is None:
-            c.execute(
-                "CREATE TABLE posts (id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT, post TEXT, upvote INTEGER, downvote INTEGER)")
-            self.connection.commit()
-        c.close()
+    def top_list(self, num_of_posts=500):
+        now = datetime.utcnow()
+        # limit number of records? .limit(num)
+        collection = self.db.postdb.find(sort=[('date', ASCENDING)])
+        tops = Counter()
+        for item in collection:
+            past = datetime.strptime(item['date'], "%Y-%m-%d_%H:%M:%S")
+            td = now - past
+            rank = front_page_rank(item['up_vote'], item['down_vote'], (td.seconds // 60) % 60)
+            tops[str(item['_id'])] = rank
+        res = take(num_of_posts, sorted(tops, key=tops.__getitem__, reverse=True))
+        print res

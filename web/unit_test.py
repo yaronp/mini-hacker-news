@@ -13,33 +13,33 @@ class PostsTest(unittest.TestCase):
 
     def test_Create(self):
         post_text = dict(post="This is my first post!")
-        response = self.app.post('/post', data=json.dumps(post_text), content_type='application/json')
+        response = self.app.post('/v0/post', data=json.dumps(post_text), content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
     def test_Create_empty(self):
-        response = self.app.post('/post', data=json.dumps(""), content_type='application/json')
+        response = self.app.post('/v0/post', data=json.dumps(""), content_type='application/json')
         self.assertEqual(response.status_code, 400)
 
     def test_Create_no_body(self):
-        response = self.app.post('/post')
+        response = self.app.post('/v0/post')
         self.assertEqual(response.status_code, 400)
 
     def test_Update(self):
         post_text = dict(post="This is my updated post!")
-        response = self.app.post('/post?id=1', data=json.dumps(post_text), content_type='application/json')
+        response = self.app.post('/v0/post?id=1', data=json.dumps(post_text), content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
     def test_Update_failure(self):
         post_text = dict(post="This is my updated post!")
-        response = self.app.post('/post?id=100', data=json.dumps(post_text), content_type='application/json')
+        response = self.app.post('/v0/post?id=100', data=json.dumps(post_text), content_type='application/json')
         self.assertEqual(response.status_code, 500)
 
     def test_Upvote(self):
-        response = self.app.post('/upvote?id=1')
+        response = self.app.post('/v0/upvote?id=1')
         self.assertEqual(response.status_code, 200)
 
     def test_Dnvote(self):
-        response = self.app.post('/downvote?id=1')
+        response = self.app.post('/v0/downvote?id=1')
         self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
