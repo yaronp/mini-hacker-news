@@ -1,10 +1,10 @@
 # Routes
 
-* /post
-* /post?id
-* /upvote?id
-* /downvote?id
-* /posts
+* /v0/post
+* /v0/post?id
+* /v0/upvote?id
+* /v0/downvote?id
+* /v0/topstories
 
 # Running (stand alone)
 
