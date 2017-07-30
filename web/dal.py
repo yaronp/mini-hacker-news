@@ -1,3 +1,4 @@
+import os
 from collections import Counter
 from datetime import datetime
 from itertools import islice
@@ -6,6 +7,7 @@ from pymongo import ASCENDING
 from pymongo import MongoClient
 
 from wilson import front_page_rank
+
 
 def take(n, iterable):
     """Return first n items of the iterable as a list"""
@@ -25,8 +27,8 @@ class Dal(object):
     __metaclass__ = Singleton
 
     def __init__(self):
-        # self.client = MongoClient(os.environ['DB_PORT_27017_TCP_ADDR'], 27017)
-        self.client = MongoClient()
+        self.client = MongoClient(os.environ['DB_PORT_27017_TCP_ADDR'], 27017)
+        # self.client = MongoClient()
         self.db = self.client.postdb
 
     def create(self, post_text):
