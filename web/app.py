@@ -54,7 +54,7 @@ def register_routes(app):
         data_set = dal.top_list()
         return json.dumps(data_set), 200, {'ContentType': 'application/json'}
 
-    @app.route('/v0//h', methods=['GET'])
+    @app.route('/v0/h', methods=['GET'])
     def api_hello():
         return "Hello, World!"
 
