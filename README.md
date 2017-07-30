@@ -6,11 +6,14 @@
 * /downvote?id
 * /posts
 
-# Running
+# Running (stand alone)
 
 ## Pre-requisites
 
     pip install flask
+    pip install pymongo   
+    
+    running mongodb server on port 27017, no security
 
 ## Run
 
@@ -19,15 +22,12 @@
     
 ## Docker Image Build
 
-    docker build ./ -t posts:latest
+    docker-compose build
    
 ## Run the Docker Container
 
-    docker run -d -p 5000:5000 --name posts posts   
- 
-or 
-
     docker-compose up -d
+    
 # Tasks
 
 * ~~Flask routes - done~~
@@ -36,9 +36,9 @@ or
 * ~~DAL - done~~
 * ~~DB structure~~
 * ~~Unit tests - done~~
-* Docker compose
-* Wilson score support for ranking
-* Redis support
+* ~~Docker compose~~
+* ~~Wilson score support for ranking~~
+* ~~MongoDB support~~
 * User login
 * Single voting
   
