@@ -7,5 +7,5 @@ services:
     volumes:
      - .:/code
   db:
-    image: "image: mongo:3.4"
+    image: "mongo:3.4"
 
