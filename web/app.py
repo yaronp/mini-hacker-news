@@ -17,7 +17,7 @@ def get_post(id):
     dal = Dal()
 
     r = dal.get(id)
-    response = {"id": r['_id'], "date": r['date'], "post": r['post']}
+    response = {"date": r['date'], "post": r['post']}
     return json.dumps(response), 200, {'ContentType': 'application/json'}
 
 
