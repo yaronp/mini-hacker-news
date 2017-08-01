@@ -34,6 +34,18 @@ def register_routes(app):
 
         return http_error('success', 200)
 
+    @app.route('/v0/post', methods=['GET'])
+    def api_post_get():
+        post_id = request.args.get('id')
+        dal = Dal()
+
+        r = dal.get(post_id)
+        response = {"id": r['_id'],
+                    "date": r['date'],
+                    "post": r['post']
+                    }
+        return json.dumps(response), 200, {'ContentType': 'application/json'}
+
     @app.route('/v0/upvote', methods=['POST'])
     def api_up_vote():
         id = request.args.get('id', '')
@@ -64,4 +76,4 @@ def register_routes(app):
 if __name__ == '__main__':
     app = create_app()
     register_routes(app)
-    app.run(debug=True,host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0')

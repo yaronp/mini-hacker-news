@@ -34,14 +34,16 @@ class Singleton(type):
 class Dal(object):
     __metaclass__ = Singleton
 
+    __slots__ = ['_client', '_db']
+
     def __init__(self):
         # self.client = MongoClient(os.environ['DB_PORT_27017_TCP_ADDR'], 27017)
         if in_docker():
-            self.client = MongoClient("db")
+            self._client = MongoClient("db")
         else:
-            self.client = MongoClient()
+            self._client = MongoClient()
 
-        self.db = self.client.postdb
+        self._db = self._client.postdb
 
     def create(self, post_text):
         # reverse: datetime.strptime(date_str, "%Y-%m-%d_%H:%M:%S")
@@ -51,21 +53,24 @@ class Dal(object):
             "up_vote": 0,
             "down_vote": 0
         }
-        return self.db.postdb.insert_one(item_doc).inserted_id
+        return self._db.postdb.insert_one(item_doc).inserted_id
 
     def update(self, post_id, update_text):
-        self.db.postdb.update_one({'_id': post_id}, {'$set': {'post': update_text}}, upsert=False)
+        self._db.postdb.update_one({'_id': post_id}, {'$set': {'post': update_text}}, upsert=False)
 
     def up_vote(self, post_id):
-        self.db.postdb.update_one({'_id': post_id}, {'$inc': {'up_vote': 1}}, upsert=False)
+        self._db.postdb.update_one({'_id': post_id}, {'$inc': {'up_vote': 1}}, upsert=False)
 
     def down_vote(self, post_id):
-        self.db.postdb.update_one({'_id': post_id}, {'$inc': {'down_vote': 1}}, upsert=False)
+        self._db.postdb.update_one({'_id': post_id}, {'$inc': {'down_vote': 1}}, upsert=False)
+
+    def get(self, post_id):
+        return self._db.postdb.find({"_id" : post_id})
 
     def top_list(self, num_of_posts=50):
         now = datetime.utcnow()
         # limit number of records? .limit(num)
-        collection = self.db.postdb.find(sort=[('date', ASCENDING)])
+        collection = self._db.postdb.find(sort=[('date', ASCENDING)])
         tops = Counter()
         for item in collection:
             past = datetime.strptime(item['date'], "%Y-%m-%d_%H:%M:%S")
