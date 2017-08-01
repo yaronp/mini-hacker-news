@@ -13,10 +13,10 @@ def http_error(msg, code):
     return json.dumps({msg: True}), code, {'ContentType': 'application/json'}
 
 
-def get_post(id):
+def get_post(post_id):
     dal = Dal()
 
-    r = dal.get(id)
+    r = dal.get(post_id)
     if r is not None:
         response = {"date": r['date'], "post": r['post']}
         return json.dumps(response), 200, {'ContentType': 'application/json'}
