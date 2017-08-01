@@ -6,9 +6,10 @@ from itertools import islice
 from pymongo import ASCENDING
 from pymongo import MongoClient
 
+from bson import objectid, errors
+
 from wilson import front_page_rank
 
-import bson.objectid
 
 def take(n, iterable):
     """Return first n items of the iterable as a list"""
@@ -38,7 +39,6 @@ class Dal(object):
     __slots__ = ['_client', '_db']
 
     def __init__(self):
-        # self.client = MongoClient(os.environ['DB_PORT_27017_TCP_ADDR'], 27017)
         if in_docker():
             self._client = MongoClient("db")
         else:
@@ -47,7 +47,6 @@ class Dal(object):
         self._db = self._client.postdb
 
     def create(self, post_text):
-        # reverse: datetime.strptime(date_str, "%Y-%m-%d_%H:%M:%S")
         item_doc = {
             "date": datetime.utcnow().strftime("%Y-%m-%d_%H:%M:%S"),
             "post": post_text,
@@ -66,7 +65,10 @@ class Dal(object):
         self._db.postdb.update_one({'_id': post_id}, {'$inc': {'down_vote': 1}}, upsert=False)
 
     def get(self, post_id):
-        return self._db.postdb.find_one({"_id": bson.objectid.ObjectId(post_id)})
+        try:
+            return self._db.postdb.find_one({"_id": objectid.ObjectId(post_id)})
+        except errors.InvalidId:
+            return None
 
     def top_list(self, num_of_posts=50):
         now = datetime.utcnow()
