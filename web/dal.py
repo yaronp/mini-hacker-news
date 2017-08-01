@@ -82,5 +82,6 @@ class Dal(object):
             tops[str(item['_id'])] = rank
         if len(tops) is 0:
             return
-        res = take(num_of_posts, sorted(tops, key=tops.__getitem__, reverse=True))
+        # sort the result using the value field (by rank)
+        res = list(islice(sorted(tops, key=tops.__getitem__, reverse=True), num_of_posts))
         return res
