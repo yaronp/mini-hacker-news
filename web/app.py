@@ -52,6 +52,8 @@ def register_routes(app):
     def api_top_list():
         dal = Dal()
         data_set = dal.top_list()
+        if len(data_set) is 0:
+            return "No posts in database"
         return json.dumps(data_set), 200, {'ContentType': 'application/json'}
 
     @app.route('/v0/h', methods=['GET'])
