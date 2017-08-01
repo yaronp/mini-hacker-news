@@ -56,7 +56,7 @@ def register_routes(app):
 
     @app.route('/v0/h', methods=['GET'])
     def api_hello():
-        return "Hello, World!"
+        return "\n\n<H>Hello, World!<H>\n\n"
 
 
 if __name__ == '__main__':
