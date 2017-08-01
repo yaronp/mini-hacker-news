@@ -3,17 +3,11 @@ from collections import Counter
 from datetime import datetime
 from itertools import islice
 
+from bson import objectid, errors
 from pymongo import ASCENDING
 from pymongo import MongoClient
 
-from bson import objectid, errors
-
 from wilson import front_page_rank
-
-
-def take(n, iterable):
-    """Return first n items of the iterable as a list"""
-    return list(islice(iterable, n))
 
 
 def in_docker():
@@ -56,19 +50,28 @@ class Dal(object):
         return self._db.postdb.insert_one(item_doc).inserted_id
 
     def update(self, post_id, update_text):
+        if self.get(post_id) is None:
+            return False
         self._db.postdb.update_one({'_id': post_id}, {'$set': {'post': update_text}}, upsert=False)
-
-    def up_vote(self, post_id):
-        self._db.postdb.update_one({'_id': post_id}, {'$inc': {'up_vote': 1}}, upsert=False)
-
-    def down_vote(self, post_id):
-        self._db.postdb.update_one({'_id': post_id}, {'$inc': {'down_vote': 1}}, upsert=False)
+        return True
 
     def get(self, post_id):
         try:
             return self._db.postdb.find_one({"_id": objectid.ObjectId(post_id)})
         except errors.InvalidId:
             return None
+
+    def up_vote(self, post_id):
+        if self.get(post_id) is None:
+            return False
+        self._db.postdb.update_one({'_id': post_id}, {'$inc': {'up_vote': 1}}, upsert=False)
+        return True
+
+    def down_vote(self, post_id):
+        if self.get(post_id) is None:
+            return False
+        self._db.postdb.update_one({'_id': post_id}, {'$inc': {'down_vote': 1}}, upsert=False)
+        return True
 
     def top_list(self, num_of_posts=50):
         now = datetime.utcnow()
@@ -82,6 +85,7 @@ class Dal(object):
             tops[str(item['_id'])] = rank
         if len(tops) is 0:
             return
-        # sort the result using the value field (by rank)
+
+        """Return first n items of the iterable as a list"""
         res = list(islice(sorted(tops, key=tops.__getitem__, reverse=True), num_of_posts))
         return res

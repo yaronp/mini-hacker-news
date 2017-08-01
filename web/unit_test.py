@@ -26,12 +26,12 @@ class PostsTest(unittest.TestCase):
 
     def test_Update(self):
         post_text = dict(post="This is my updated post!")
-        response = self.app.post('/v0/post?id=1', data=json.dumps(post_text), content_type='application/json')
+        response = self.app.put('/v0/post?id=1', data=json.dumps(post_text), content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
     def test_Update_failure(self):
         post_text = dict(post="This is my updated post!")
-        response = self.app.post('/v0/post?id=100', data=json.dumps(post_text), content_type='application/json')
+        response = self.app.put('/v0/post?id=100', data=json.dumps(post_text), content_type='application/json')
         self.assertEqual(response.status_code, 500)
 
     def test_Upvote(self):

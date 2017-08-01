@@ -32,44 +32,54 @@ def create_post(post_text):
         return http_error('success', 200)
 
 
+def update_post(post_id, post_text):
+    dal = Dal()
+    if not dal.update(post_id, post_text):
+        return http_error('error while inserting record to storage', 500)
+
+    return http_error('success', 200)
+
+
 def register_routes(app):
-    @app.route('/v0/post', methods=['POST', 'GET'])
+    @app.route('/v0/post', methods=['POST', 'GET', 'PUT'])
     def api_posts():
         post_id = request.args.get('id')
+        content = request.get_json(silent=True)
 
+        # Retrieve existing one '''
         if request.method == 'GET':
             if post_id is None:
                 return http_error('No post id in args', 400)
             return get_post(post_id)
 
-        content = request.get_json(silent=True)
+        # validate body and data
         if request.data is None or type(content) is not dict:
-            return http_error('empty or wrong type body (json body type?)', 400)
+            return http_error('empty or wrong type body content (json body type?)', 400)
+
         post_text = content.get('post')
-        if post_text is None:
-            return http_error('post field not found in body', 400)
-
-        if post_id is None:
+        if request.method == 'POST':  # Create a new one
             return create_post(post_text)
-        else:
-            dal = Dal()
-            if not dal.update(post_id, post_text):
-                return http_error('error while inserting record to storage', 500)
-
-        return http_error('success', 200)
+        elif request.method == 'PUT':  # Update existing one
+            if post_id is None:
+                return http_error('No post id in args', 400)
+            return update_post(post_id, post_text)
 
     @app.route('/v0/upvote', methods=['POST'])
     def api_up_vote():
-        id = request.args.get('id', '')
+        post_id = request.args.get('id', '')
+        if post_id is None:
+            return http_error('No post id in args', 400)
         dal = Dal()
-        dal.up_vote(id)
+        dal.up_vote(post_id)
         return http_error('success', 200)
 
     @app.route('/v0/downvote', methods=['POST'])
     def api_down_vote():
-        id = request.args.get('id', '')
+        post_id = request.args.get('id', '')
+        if post_id is None:
+            return http_error('No post id in args', 400)
         dal = Dal()
-        dal.down_vote(id)
+        dal.down_vote(post_id)
         return http_error('success', 200)
 
     @app.route('/v0/topstories', methods=['GET'])
