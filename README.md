@@ -1,10 +1,11 @@
 # Routes
 
-* /v0/post
-* /v0/post?id
-* /v0/upvote?id
-* /v0/downvote?id
-* /v0/topstories
+* POST /v0/post
+* GET /v0/post?id
+* PUT /v0/post?id
+* POST /v0/upvote?id
+* POST /v0/downvote?id
+* GET /v0/topstories
 
 # Running (stand alone)
 
@@ -40,5 +41,4 @@
 * ~~Wilson score support for ranking~~
 * ~~MongoDB support~~
 * User login
-* Single voting
   
