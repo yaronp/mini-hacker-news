@@ -17,8 +17,11 @@ def get_post(id):
     dal = Dal()
 
     r = dal.get(id)
-    response = {"date": r['date'], "post": r['post']}
-    return json.dumps(response), 200, {'ContentType': 'application/json'}
+    if r is not None:
+        response = {"date": r['date'], "post": r['post']}
+        return json.dumps(response), 200, {'ContentType': 'application/json'}
+    else:
+        return http_error('Not found', 400)
 
 
 def create_post(post_text):

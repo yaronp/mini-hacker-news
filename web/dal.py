@@ -8,6 +8,7 @@ from pymongo import MongoClient
 
 from wilson import front_page_rank
 
+import bson.objectid
 
 def take(n, iterable):
     """Return first n items of the iterable as a list"""
@@ -65,7 +66,7 @@ class Dal(object):
         self._db.postdb.update_one({'_id': post_id}, {'$inc': {'down_vote': 1}}, upsert=False)
 
     def get(self, post_id):
-        return self._db.postdb.find({"_id" : post_id})
+        return self._db.postdb.find_one({"_id": bson.objectid.ObjectId(post_id)})
 
     def top_list(self, num_of_posts=50):
         now = datetime.utcnow()
